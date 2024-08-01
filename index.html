@@ -113,7 +113,8 @@
             const year = String(startDate.getFullYear()).substring(2, 4);
 
             const code = `${name}${surname}${day}${month}${year}`;
-            document.getElementById('codeOutput').textContent = `Codice univoco: ${code}`;
+            const codeOutput = document.getElementById('codeOutput');
+            codeOutput.innerHTML = `Codice univoco: ${code}<br>Questo codice deve essere comunicato alla reception dello stabilimento.<br>La richiesta di prenotazione non dà automaticamente diritto al posto ombrellone. La direzione si riserva di valutare le richieste secondo le disponibilità.`;
             document.getElementById('sendWhatsApp').style.display = 'block';
         }
 
@@ -127,7 +128,7 @@
             const endDate = document.getElementById('endDate').value;
             const code = document.getElementById('codeOutput').textContent.split(': ')[1];
 
-            let message = `Prenotazione Ombrellone:%0A`;
+            let message = `Richiesta di prenotazione Ombrellone:%0A`;
             message += `Nome: ${name}%0A`;
             message += `Cognome: ${surname}%0A`;
             message += `Cellulare: ${phone}%0A`;
@@ -140,6 +141,17 @@
             const whatsappUrl = `https://wa.me/393346395727?text=${message}`;
             window.open(whatsappUrl, '_blank');
         }
+
+        document.getElementById('startDate').addEventListener('input', function() {
+            const startDate = new Date(this.value);
+            const today = new Date();
+            today.setDate(today.getDate() + 1);
+
+            if (startDate < today) {
+                alert("La data di arrivo deve essere almeno il giorno successivo a quello odierno.");
+                this.value = '';
+            }
+        });
     </script>
 </body>
 </html>

@@ -10,17 +10,23 @@
             margin: 0;
             padding: 0;
             background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .container {
             width: 100%;
             max-width: 600px;
-            margin: 50px auto;
+            margin: 20px;
             background-color: #fff;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
         .form-group {
             margin-bottom: 15px;
+            text-align: left;
         }
         .form-group label {
             display: block;
@@ -50,6 +56,7 @@
         .logo {
             display: block;
             margin: 0 auto 20px;
+            max-width: 150px; /* Imposta una larghezza massima per il logo */
         }
     </style>
 </head>
@@ -145,6 +152,7 @@
         document.getElementById('startDate').addEventListener('input', function() {
             const startDate = new Date(this.value);
             const today = new Date();
+            today.setHours(0, 0, 0, 0);  // Elimina le ore per confrontare solo le date
             today.setDate(today.getDate() + 1);
 
             if (startDate < today) {

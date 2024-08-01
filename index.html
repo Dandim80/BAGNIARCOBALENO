@@ -56,10 +56,10 @@
         }
         .logo {
             display: block;
-            margin: 300px auto 20px auto; /* Aggiungi margine superiore per abbassare il logo */
-            max-height: 300px; /* Imposta un'altezza massima per il logo */
-            width: auto; /* Mantiene le proporzioni */
-            object-fit: contain; /* Mantiene le proporzioni senza ritaglio */
+            margin: 300px auto 20px auto;
+            max-height: 300px;
+            width: auto;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -135,7 +135,7 @@
 
             const code = `${nameCode}${surnameCode}${day}${month}${year}`;
             const codeOutput = document.getElementById('codeOutput');
-            codeOutput.innerHTML = `Codice univoco: ${code}`;
+            codeOutput.innerHTML = `Codice univoco: ${code}<br>Questo codice deve essere comunicato alla reception dello stabilimento.<br>La richiesta di prenotazione non dà automaticamente diritto al posto ombrellone. La direzione si riserva di valutare le richieste secondo le disponibilità.`;
             document.getElementById('sendWhatsApp').style.display = 'block';
         }
 
@@ -157,26 +157,32 @@
             message += `Note: ${notes ? notes : 'Nessuna'}\n`;
             message += `Data di arrivo: ${startDate}\n`;
             message += `Data di fine prenotazione: ${endDate}\n\n`;
-            message += `Codice univoco: ${code}\n\n`;
-            message += `Questo codice deve essere comunicato alla reception dello stabilimento.\n\n`;
+            message += `Codice univoco: ${code}\n\n`;  // Aggiunta una riga vuota qui
+            message += `Questo codice deve essere comunicato alla reception dello stabilimento.\n`;
             message += `La richiesta di prenotazione non dà automaticamente diritto al posto ombrellone. La direzione si riserva di valutare le richieste secondo le disponibilità.`;
+
+            // Invia i dati al webhook di Zapier
+            fetch('https://hooks.zapier.com/hooks/catch/19656548/2ucu7uj/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    surname: surname,
+                    phone: phone,
+                    row: row,
+                    notes: notes,
+                    startDate: startDate,
+                    endDate: endDate,
+                    code: code
+                })
+            });
 
             // Codifica il testo del messaggio per l'URL
             const whatsappUrl = `https://wa.me/393346395727?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
         }
-
-        document.getElementById('startDate').addEventListener('input', function() {
-            const startDate = new Date(this.value);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);  // Elimina le ore per confrontare solo le date
-            today.setDate(today.getDate() + 1);
-
-            if (startDate < today) {
-                alert("La data di arrivo deve essere almeno il giorno successivo a quello odierno.");
-                this.value = '';
-            }
-        });
     </script>
 </body>
 </html>

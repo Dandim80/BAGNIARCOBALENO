@@ -56,8 +56,8 @@
         }
         .logo {
             display: block;
-            margin: 300px auto 0px auto; /* Aggiungi margine superiore per abbassare il logo */
-            max-height: 200px; /* Imposta un'altezza massima per il logo */
+            margin: 300px auto 20px auto; /* Aggiungi margine superiore per abbassare il logo */
+            max-height: 300px; /* Imposta un'altezza massima per il logo */
             width: auto; /* Mantiene le proporzioni */
             object-fit: contain; /* Mantiene le proporzioni senza ritaglio */
         }
@@ -149,18 +149,19 @@
             const endDate = document.getElementById('endDate').value;
             const code = document.getElementById('codeOutput').textContent.split(': ')[1].split('<br>')[0].trim();
 
-            let message = `Richiesta di prenotazione Ombrellone:%0A`;
-            message += `Nome: ${name}%0A`;
-            message += `Cognome: ${surname}%0A`;
-            message += `Cellulare: ${phone}%0A`;
-            message += `Fila richiesta: ${row}%0A`;
-            message += `Note: ${notes ? notes : 'Nessuna'}%0A`;
-            message += `Data di arrivo: ${startDate}%0A`;
-            message += `Data di fine prenotazione: ${endDate}%0A%0A`;
-            message += `Codice univoco: ${code}%0A`;
-            message += `Questo codice deve essere comunicato alla reception dello stabilimento.%0A`;
+            let message = `Richiesta di prenotazione Ombrellone:\n`;
+            message += `Nome: ${name}\n`;
+            message += `Cognome: ${surname}\n`;
+            message += `Cellulare: ${phone}\n`;
+            message += `Fila richiesta: ${row}\n`;
+            message += `Note: ${notes ? notes : 'Nessuna'}\n`;
+            message += `Data di arrivo: ${startDate}\n`;
+            message += `Data di fine prenotazione: ${endDate}\n\n`;
+            message += `Codice univoco: ${code}\n`;
+            message += `Questo codice deve essere comunicato alla reception dello stabilimento.\n`;
             message += `La richiesta di prenotazione non dà automaticamente diritto al posto ombrellone. La direzione si riserva di valutare le richieste secondo le disponibilità.`;
 
+            // Codifica il testo del messaggio per l'URL
             const whatsappUrl = `https://wa.me/393346395727?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
         }

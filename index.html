@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prenotazione Ombrelloni</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .code {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Prenotazione Ombrelloni</h2>
+        <form id="bookingForm">
+            <div class="form-group">
+                <label for="name">Nome</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="surname">Cognome</label>
+                <input type="text" id="surname" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Cellulare</label>
+                <input type="text" id="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="row">Fila richiesta</label>
+                <select id="row" required>
+                    <option value="indifferente" selected>Ininfluente</option>
+                    <option value="riva">Più possibile in riva</option>
+                    <option value="muretto">Vicino al muretto</option>
+                    <option value="passaggio">Vicino al passaggio pedonale</option>
+                    <option value="cani">Zona attrezzata per cani</option>
+                    <option value="ultima">Ultima fila</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="notes">Note eventuali</label>
+                <textarea id="notes" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="startDate">Data di arrivo</label>
+                <input type="date" id="startDate" required>
+            </div>
+            <div class="form-group">
+                <label for="endDate">Data di fine prenotazione</label>
+                <input type="date" id="endDate" required>
+            </div>
+            <div class="form-group">
+                <button type="button" onclick="generateCode()">Genera Codice</button>
+            </div>
+        </form>
+        <div class="code" id="codeOutput"></div>
+        <div class="form-group">
+            <button type="button" id="sendWhatsApp" style="display: none;" onclick="sendWhatsApp()">Invia via WhatsApp la Prenotazione</button>
+        </div>
+    </div>
+
+    <script>
+        function generateCode() {
+            const name = document.getElementById('name').value.replace(/\s+/g, '').toUpperCase().substring(0, 3);
+            const surname = document.getElementById('surname').value.replace(/\s+/g, '').toUpperCase().substring(0, 3);
+            const startDate = new Date(document.getElementById('startDate').value);
+            const day = String(startDate.getDate()).padStart(2, '0');
+            const month = String(startDate.getMonth() + 1).padStart(2, '0');
+            const year = String(startDate.getFullYear()).substring(2, 4);
+
+            const code = `${name}${surname}${day}${month}${year}`;
+            document.getElementById('codeOutput').textContent = `Codice univoco: ${code}`;
+            document.getElementById('sendWhatsApp').style.display = 'block';
+        }
+
+        function sendWhatsApp() {
+            const name = document.getElementById('name').value;
+            const surname = document.getElementById('surname').value;
+            const phone = document.getElementById('phone').value;
+            const row = document.getElementById('row').value;
+            const notes = document.getElementById('notes').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const code = document.getElementById('codeOutput').textContent.split(': ')[1];
+
+            let message = `Prenotazione Ombrellone:%0A`;
+            message += `Nome: ${name}%0A`;
+            message += `Cognome: ${surname}%0A`;
+            message += `Cellulare: ${phone}%0A`;
+            message += `Fila richiesta: ${row}%0A`;
+            message += `Note: ${notes ? notes : 'Nessuna'}%0A`;
+            message += `Data di arrivo: ${startDate}%0A`;
+            message += `Data di fine prenotazione: ${endDate}%0A`;
+            message += `Codice univoco: ${code}`;
+
+            const whatsappUrl = `https://wa.me/393346395727?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
+</body>
+</html>

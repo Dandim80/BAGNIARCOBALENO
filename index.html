@@ -52,11 +52,14 @@
             padding: 10px;
             background-color: #e9ecef;
             border: 1px solid #ced4da;
+            text-align: left;
         }
         .logo {
             display: block;
             margin: 0 auto 20px;
-            max-width: 150px; /* Imposta una larghezza massima per il logo */
+            max-height: 100px; /* Imposta un'altezza massima per il logo */
+            width: auto; /* Mantiene le proporzioni */
+            object-fit: contain; /* Mantiene le proporzioni senza ritaglio */
         }
     </style>
 </head>
@@ -112,14 +115,25 @@
 
     <script>
         function generateCode() {
-            const name = document.getElementById('name').value.replace(/\s+/g, '').toUpperCase().substring(0, 3);
-            const surname = document.getElementById('surname').value.replace(/\s+/g, '').toUpperCase().substring(0, 3);
-            const startDate = new Date(document.getElementById('startDate').value);
-            const day = String(startDate.getDate()).padStart(2, '0');
-            const month = String(startDate.getMonth() + 1).padStart(2, '0');
-            const year = String(startDate.getFullYear()).substring(2, 4);
+            const name = document.getElementById('name').value.trim();
+            const surname = document.getElementById('surname').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const startDate = document.getElementById('startDate').value;
 
-            const code = `${name}${surname}${day}${month}${year}`;
+            // Controlla se i campi obbligatori sono compilati
+            if (!name || !surname || !phone || !startDate) {
+                alert('Per generare il codice, compilare i campi Nome, Cognome, Cellulare e Data di arrivo.');
+                return;
+            }
+
+            const nameCode = name.replace(/\s+/g, '').toUpperCase().substring(0, 3);
+            const surnameCode = surname.replace(/\s+/g, '').toUpperCase().substring(0, 3);
+            const start = new Date(startDate);
+            const day = String(start.getDate()).padStart(2, '0');
+            const month = String(start.getMonth() + 1).padStart(2, '0');
+            const year = String(start.getFullYear()).substring(2, 4);
+
+            const code = `${nameCode}${surnameCode}${day}${month}${year}`;
             const codeOutput = document.getElementById('codeOutput');
             codeOutput.innerHTML = `Codice univoco: ${code}<br>Questo codice deve essere comunicato alla reception dello stabilimento.<br>La richiesta di prenotazione non dà automaticamente diritto al posto ombrellone. La direzione si riserva di valutare le richieste secondo le disponibilità.`;
             document.getElementById('sendWhatsApp').style.display = 'block';
@@ -133,7 +147,7 @@
             const notes = document.getElementById('notes').value;
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
-            const code = document.getElementById('codeOutput').textContent.split(': ')[1];
+            const code = document.getElementById('codeOutput').textContent.split(': ')[1].split('<br>')[0].trim();
 
             let message = `Richiesta di prenotazione Ombrellone:%0A`;
             message += `Nome: ${name}%0A`;
@@ -142,10 +156,12 @@
             message += `Fila richiesta: ${row}%0A`;
             message += `Note: ${notes ? notes : 'Nessuna'}%0A`;
             message += `Data di arrivo: ${startDate}%0A`;
-            message += `Data di fine prenotazione: ${endDate}%0A`;
-            message += `Codice univoco: ${code}`;
+            message += `Data di fine prenotazione: ${endDate}%0A%0A`;
+            message += `Codice univoco: ${code}%0A`;
+            message += `Questo codice deve essere comunicato alla reception dello stabilimento.%0A`;
+            message += `La richiesta di prenotazione non dà automaticamente diritto al posto ombrellone. La direzione si riserva di valutare le richieste secondo le disponibilità.`;
 
-            const whatsappUrl = `https://wa.me/393346395727?text=${message}`;
+            const whatsappUrl = `https://wa.me/393346395727?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
         }
 

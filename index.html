@@ -118,70 +118,51 @@
             const name = document.getElementById('name').value.trim();
             const surname = document.getElementById('surname').value.trim();
             const phone = document.getElementById('phone').value.trim();
+            const row = document.getElementById('row').value;
+            const notes = document.getElementById('notes').value.trim();
             const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
 
-            // Controlla se i campi obbligatori sono compilati
             if (!name || !surname || !phone || !startDate) {
-                alert('Per generare il codice, compilare i campi Nome, Cognome, Cellulare e Data di arrivo.');
+                alert('Per generare il codice, compila almeno i campi Nome, Cognome, Cellulare e Data di arrivo.');
                 return;
             }
 
-            const nameCode = name.replace(/\s+/g, '').toUpperCase().substring(0, 3);
-            const surnameCode = surname.replace(/\s+/g, '').toUpperCase().substring(0, 3);
-            const start = new Date(startDate);
-            const day = String(start.getDate()).padStart(2, '0');
-            const month = String(start.getMonth() + 1).padStart(2, '0');
-            const year = String(start.getFullYear()).substring(2, 4);
-
-            const code = `${nameCode}${surnameCode}${day}${month}${year}`;
+            const formattedDate = startDate.replace(/-/g, '').slice(6) + startDate.replace(/-/g, '').slice(4, 6);
+            const code = surname.substring(0, 3).toUpperCase() + name.substring(0, 3).toUpperCase() + formattedDate;
+            
             const codeOutput = document.getElementById('codeOutput');
-            codeOutput.innerHTML = `Codice univoco: ${code}<br>Questo codice deve essere comunicato alla reception dello stabilimento.<br>La richiesta di prenotazione non dà automaticamente diritto al posto ombrellone. La direzione si riserva di valutare le richieste secondo le disponibilità.`;
+            codeOutput.textContent = `Codice univoco: ${code}\nQuesto codice deve essere comunicato alla reception dello stabilimento.\nLa richiesta di prenotazione non dà automaticamente diritto al posto ombrellone, la direzione si riserva di valutare le richieste secondo le disponibilità.`;
+
             document.getElementById('sendWhatsApp').style.display = 'block';
-        }
+            document.getElementById('sendWhatsApp').dataset.message = `Richiesta di prenotazione Ombrellone\n\nDettagli della prenotazione:\nNome: ${name}\nCognome: ${surname}\nCellulare: ${phone}\nFila richiesta: ${row}\nNote: ${notes}\nData di arrivo: ${startDate}\nData di fine prenotazione: ${endDate}\nCodice univoco: ${code}\n\nQuesto codice deve essere comunicato alla reception dello stabilimento.`;
+            
+            // Invia i dati a Zapier
+            const payload = {
+                name,
+                surname,
+                phone,
+                row,
+                notes,
+                startDate,
+                endDate,
+                code
+            };
 
-        function sendWhatsApp() {
-            const name = document.getElementById('name').value;
-            const surname = document.getElementById('surname').value;
-            const phone = document.getElementById('phone').value;
-            const row = document.getElementById('row').selectedOptions[0].text;
-            const notes = document.getElementById('notes').value;
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const code = document.getElementById('codeOutput').textContent.split(': ')[1].split('<br>')[0].trim();
-
-            let message = `Richiesta di prenotazione Ombrellone:\n`;
-            message += `Nome: ${name}\n`;
-            message += `Cognome: ${surname}\n`;
-            message += `Cellulare: ${phone}\n`;
-            message += `Fila richiesta: ${row}\n`;
-            message += `Note: ${notes ? notes : 'Nessuna'}\n`;
-            message += `Data di arrivo: ${startDate}\n`;
-            message += `Data di fine prenotazione: ${endDate}\n\n`;
-            message += `Codice univoco: ${code}\n\n`;  // Aggiunta una riga vuota qui
-            message += `Questo codice deve essere comunicato alla reception dello stabilimento.\n`;
-            message += `La richiesta di prenotazione non dà automaticamente diritto al posto ombrellone. La direzione si riserva di valutare le richieste secondo le disponibilità.`;
-
-            // Invia i dati al webhook di Zapier
             fetch('https://hooks.zapier.com/hooks/catch/19656548/2ucu7uj/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    name: name,
-                    surname: surname,
-                    phone: phone,
-                    row: row,
-                    notes: notes,
-                    startDate: startDate,
-                    endDate: endDate,
-                    code: code
-                })
+                body: JSON.stringify(payload)
             });
+        }
 
-            // Codifica il testo del messaggio per l'URL
-            const whatsappUrl = `https://wa.me/393346395727?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
+        function sendWhatsApp() {
+            const message = document.getElementById('sendWhatsApp').dataset.message;
+            const phoneNumber = '3346395727';
+            const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
         }
     </script>
 </body>

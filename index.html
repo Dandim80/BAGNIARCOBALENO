@@ -115,16 +115,23 @@
 
     <script>
         function generateCode() {
-            const name = document.getElementById('name').value.trim();
-            const surname = document.getElementById('surname').value.trim();
+            const name = document.getElementById('name').value.trim().replace(/\s+/g, '');
+            const surname = document.getElementById('surname').value.trim().replace(/\s+/g, '');
             const phone = document.getElementById('phone').value.trim();
             const row = document.getElementById('row').value;
             const notes = document.getElementById('notes').value.trim();
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
 
+            const today = new Date().toISOString().split('T')[0]; // Data odierna in formato YYYY-MM-DD
+
             if (!name || !surname || !phone || !startDate) {
                 alert('Per generare il codice, compila almeno i campi Nome, Cognome, Cellulare e Data di arrivo.');
+                return;
+            }
+
+            if (startDate <= today) {
+                alert('La data di arrivo deve essere successiva alla data odierna.');
                 return;
             }
 
